@@ -1,0 +1,18 @@
+install.packages('hdi','pROC')
+library(hdi,pROC)
+data <- read.csv(file="/Data4_30full.csv")
+x=data[,-c(1,2)]
+y=data[,2]
+
+fit.lasso <- lasso.proj(x, y , family = "gaussian", standardize = TRUE,
+                        multiplecorr.method = "holm", 
+                        parallel = FALSE, ncores = getOption("mc.cores", 2L),
+                        betainit = "scaled lasso", sigma = NULL, Z = NULL, verbose = FALSE,
+                        return.Z = FALSE, suppress.grouptesting = FALSE, robust = TRUE)
+bhat <- fit.lasso$bhat
+pvalues <- fit.lasso$pval
+
+realb=c(rep(1,44),rep(0,2200-44))
+
+roc1 <- roc(realb,1-pvalues)
+auc1=roc1$auc
