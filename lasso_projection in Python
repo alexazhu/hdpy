@@ -204,7 +204,7 @@ def lassoproj(x,y,standardize,robust):
     bprojrescaled = np.zeros(p)
     for i in range(p):
         bprojrescaled[i] = bproj[i]*scaleb[i]
-    pval = 2 * st.norm.sf(np.abs(bprojrescaled))
+    pval = 2 * norm.sf(np.abs(bprojrescaled))
     bhat= bproj/sds
 
     return pval,  bhat
