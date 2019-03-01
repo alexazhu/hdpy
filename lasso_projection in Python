@@ -79,10 +79,10 @@ def nodewiselasso(x,lambdatuningfactor=1):
         Z[:, i] = X[:, i] - prediction
 
     # rescale Z#
-    #dz = np.dot(Z.T, X)
-    #dz = np.diag(dz)
-    #scaleZ = dz / n
-    #Z = np.true_divide(Z, scaleZ)
+    dz = np.dot(Z.T, X)
+    dz = np.diag(dz)
+    scaleZ = dz / n
+    Z = np.true_divide(Z, scaleZ)
 
     return Z
 
