@@ -76,10 +76,10 @@ def nodewiselasso(x,lambdatuningfactor=1):
         fit = linear_model.Lasso(alpha=bestlambda)
         fit.fit(X=temp, y=np.ravel(x[:, i], order='C'))
         prediction =fit.predict(X=temp)
-        Z[:, i] = X[:, i] - prediction
+        Z[:, i] = x[:, i] - prediction
 
     # rescale Z#
-    dz = np.dot(Z.T, X)
+    dz = np.dot(Z.T, x)
     dz = np.diag(dz)
     scaleZ = dz / n
     Z = np.true_divide(Z, scaleZ)
@@ -175,7 +175,7 @@ def lassoproj(x,y,standardize,robust):
         #check if normalization is fullfiled
         Zx = np.multiply(Z,x)
         if  ~np.allclose(np.ones(p),np.sum(Zx/n,axis=0)):
-            dz = np.dot(Z.T, X)
+            dz = np.dot(Z.T, x)
             dz = np.diag(dz)
             scaleZ = dz / n
             Z = np.true_divide(Z, scaleZ)
@@ -183,7 +183,7 @@ def lassoproj(x,y,standardize,robust):
         if len(hbeta) > p:
             one = np.ones(n)
             x = np.concatenate(one, x, axis=1)
-        prediction=np.dot(hbeta,X.T)
+        prediction=np.dot(hbeta,x.T)
         eps_tmp=y.T-prediction
         ## force esp_tmp to have mean 0 as if we fit with intercept
         eps_tmp=eps_tmp-np.mean(eps_tmp)
