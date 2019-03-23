@@ -14,5 +14,5 @@ pvalues <- fit.lasso$pval
 
 realb=c(rep(1,44),rep(0,2200-44))
 
-roc1 <- roc(realb,1-pvalues)
-auc1=roc1$auc
+roc <- roc(realb,1-pvalues)
+roc1$auc
