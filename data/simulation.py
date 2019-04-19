@@ -4,7 +4,7 @@ import math
 
 # produce a symmetrix matrix with an triangular matrix
 def copytri(m):
-    uppertri = np.triu(a=m, k=1)
+    uppertri = np.triu(m, 1)
     lowertri = np.transpose(uppertri)
     out = np.diag(np.diag(m)) + uppertri + lowertri
     return out
