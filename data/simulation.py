@@ -1,67 +1,71 @@
 import numpy as np
 import math
 
-
 # produce a symmetrix matrix with an triangular matrix
-def copytri(m):
-    uppertri = np.triu(m, 1)
-    lowertri = np.transpose(uppertri)
-    out = np.diag(np.diag(m)) + uppertri + lowertri
-    return out
-
 
 class simulation:
-    def __init__(self, n, p, type):
+    def __init__(self, n, p, type,seed):
         self.type = type
         self.n = n
         self.p = p
+        self.seed = seed
 
     def get_sigma(self):
         # Generate covariance matrix for the designed matrices
         sigma = np.identity(self.p)
 
+        def copytri(m):
+            uppertri = np.triu(m, 1)
+            lowertri = np.transpose(uppertri)
+            out = np.diag(np.diag(m)) + uppertri + lowertri
+            return out
+
+        def copytri(m):
+            uppertri = np.triu(m, 1)
+            lowertri = np.transpose(uppertri)
+            out = np.diag(np.diag(m)) + uppertri + lowertri
+            return out
+
         if self.type == 'Toeplitz':
             sigmaT = sigma.copy()
+            for j in range(self.p):
+                k = j + 1
+                while k < self.p:
+                    sigmaT[j, k] = math.pow(0.5, abs(j - k))
+                    k = k + 1
+            sigmaT=copytri(sigmaT)
+            return sigmaT
+
+        if self.type == 'Exp_decay':
+            sigma_inv = sigma.copy()
             for i in range(self.p):
                 t = self.p - 1
                 index = i + 1
                 while index < self.p:
-                    sigmaT[i, index] = math.pow(0.9, abs(index - i))
+                    sigma_inv[i, index] = math.pow(0.4, abs(index - i) / 5)
                     index = index + 1
+            sigma_inv = copytri(sigma_inv)
+            sigmaD = np.linalg.inv(sigma_inv)
+            return sigmaD
 
-            return copytri(sigmaT)
-        else:
-            if self.type == 'Exp_decay':
-                sigma_inv = np.identity(self.p)
-                for i in range(self.p):
-                    t = self.p - 1
-                    index = i + 1
-                    while index < self.p:
-                        sigma_inv[i, index] = math.pow(0.4, abs(index - i) / 5)
-                        index = index + 1
-                sigma_inv = copytri(sigma_inv)
-                sigmaD = np.linalg.inv(sigma_inv)
-                return sigmaD
+        if self.type == 'Equi_corr':
+            sigmaE = np.full(shape=(self.p, self.p), fill_value=0.8)
+            np.fill_diagonal(sigmaE, val=1)
+            return sigmaE
 
-            elif self.type == 'Equi_corr':
-                sigmaE = np.full(shape=(p, p), fill_value=0.8)
-                sigmaE = np.fill_diagonal(sigmaE, val=1)
-                return sigmaE
+        if self.type == 'Circulant':
+            circulate = [0.1]*5 + [0.0]*(self.p-11) + [0.1]*(5)
+            for j in range(self.p):
+                sigma[j,(j + 1):] = circulate[:(self.p-1-j)]
+                sigma[j, :j] = circulate[(self.p-1-j):self.p]
+            return sigma
 
-            elif self.type == 'circulant':
-                for i in range(self.p):
-                    sigma[i, (i + 1):(i + 5)] = 0.1
-                    sigma[i, (i + self.p - 5):(i + self.p - 1)] = 0.1
-                sigma = copytri(sigma)
-                return sigma
-
-            elif type == 'normal':
-                return sigma
-        return 0
+        if type == 'normal':
+            return sigma
 
     def get_coefs(self, s0, random_coef=False, b=None, unif_up=None, unif_lw=None):
-        
-        """ 
+
+        """
         -----------
         Parameters:
         -----------
@@ -80,7 +84,7 @@ class simulation:
         -----------
         betas : array-like, shape(n_features, )
         """
-    
+        np.random.seed(self.seed)
         active_index = np.random.randint(low=1, high=self.p, size=s0, dtype='l')
         betas = np.zeros(self.p)
         if random_coef:
@@ -89,17 +93,18 @@ class simulation:
             betas[active_index] = b
 
         self.coefs = betas
-        return betas
+        return betas,active_index
 
-    def get_data(self, verbose=False):
+    def get_data(self,s, verbose=False):
         sigma = self.get_sigma()
         if verbose == True:
             print("The used covariance matrix is:")
             print(sigma)
         # Designed matrices are generated ~ Np(0,sigma)
+        np.random.seed(self.seed)
         X = np.random.multivariate_normal(mean=np.zeros(self.p), cov=sigma, size=self.n)
+        scale = np.sqrt(self.coefs.T * sigma * self.coefs)/s
         noise = np.random.normal(size=self.n)
         betas = self.coefs
         Y = np.dot(X, betas) + noise
         return X, Y
-
