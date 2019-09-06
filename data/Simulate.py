@@ -63,7 +63,8 @@ class simulation:
         if type == 'normal':
             return sigma
 
-    def get_coefs(self, s0, random_coef=False, b=None, unif_up=None, unif_lw=None):
+    def get_coefs(self, s0=None, random_coef=False, b=1, unif_up=None, unif_lw=None,
+                  save=True,path="./",filename="data"):
 
         """
         -----------
@@ -91,13 +92,20 @@ class simulation:
             betas[active_index] = np.random.randint(low=unif_lw, high=unif_up, size=s0, dtype='l')
         else:
             betas[active_index] = b
-
         self.coefs = betas
+        if save:
+            np.savetxt(path + filename + "_betas.csv", betas,
+                       fmt="%.4f", delimiter=",")
+            np.savetxt(path + filename + "_index.csv", active_index,
+                       fmt="%.4f", delimiter=",")
+
         return betas,active_index
 
-    def get_data(self, verbose=False):
+
+    def get_data(self, verbose=False,save=True,
+                 path="./",filename="data"):
         sigma = self.get_sigma()
-        if verbose == True:
+        if verbose:
             print("The used covariance matrix is:")
             print(sigma)
         # Designed matrices are generated ~ Np(0,sigma)
@@ -106,4 +114,10 @@ class simulation:
         noise = np.random.normal(loc=0,scale=1/self.snr,size=self.n)
         betas = self.coefs
         Y = np.dot(X, betas) + noise
+        sim_data = np.column_stack((Y, X))
+
+        if save:
+            np.savetxt(path + filename + ".csv", sim_data,
+                       fmt="%.4f", delimiter=",")
+
         return X, Y
