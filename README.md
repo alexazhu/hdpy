@@ -4,7 +4,7 @@
 
 The hdpy package is a Python module for statistical inference with linear regression models on high-dimensional data.  
 * Implementation of four high-dimensional regression methods: Multiple splitting Method, Lasso Projection method, Ridge Projection method, debiased Lasso method.  
-* Produce %p%-values adjusted for multiple testing.
+* Produce ~p-values adjusted for multiple testing.
 * Aggregate confidence intervals for non-zero coefficients.
 
 ## File Structure
