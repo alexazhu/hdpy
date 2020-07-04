@@ -32,12 +32,13 @@ X,Y= sim.get_data(verbose=False,save=True,
 
 ```
 
-### fitting
+### Fit the Data
 ```
+import hdpy
 est = hdpy.hd(method = "multi-split", X=X,y=Y,...)
 ```
 
-### get p-values / confidence intervals
+### Get p-values / confidence intervals
 ```
 pvals = est.pvals\
 pvals_corr = est.pvals_corr\
