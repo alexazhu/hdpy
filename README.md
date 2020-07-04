@@ -7,7 +7,7 @@ The hdpy package is a Python module for statistical inference with linear regres
 * Produce %p%-values adjusted for multiple testing.
 * Aggregate confidence intervals for non-zero coefficients.
 
-# File Structure:
+## File Structure
 
 * HDI/ four individual implementations of high-dimensional inference methods.
 * data/ high dimensional data simulator with experiment dataset in the example.
