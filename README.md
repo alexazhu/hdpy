@@ -6,16 +6,17 @@ The hdpy package is a Python module for statistical inference with linear regres
 * Implementation of four high-dimensional regression methods: Multiple splitting Method, Lasso Projection method, Ridge Projection method, debiased Lasso method.  
 * Produce p-values adjusted for multiple testing.
 * Aggregate confidence intervals for non-zero coefficients.
+* Visualize p-values for variable screening
 
 ## File Structure
 
 * HDI/ four individual implementations of high-dimensional inference methods.
 * data/ high dimensional data simulator with experiment dataset in the example.
-* hdpy.py main entry point of using the Precision Lasso to work with your own data
+* hdpy.py main entry point of using the hdpy to work with your own data
 
 
 ## Installation
-Numpy, Sklearn and Statsmodels package are required on your current system.
+Numpy, Sklearn, Statsmodels, seaborn package are required on your current system.
 
 
 ## Example
@@ -45,3 +46,10 @@ pvals_corr = est.pvals_corr\
 #lci = est.lci\
 #uci = est.uci
 ```
+### Data Visualization
+
+
+
+
+
+
