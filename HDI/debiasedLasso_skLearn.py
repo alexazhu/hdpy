@@ -1,11 +1,7 @@
 __author__ = 'Haohan Wang, Ziyan Zhu'
 
 from sklearn.linear_model import LassoCV, Lasso
-
 import numpy as np
-
-import pandas as pd
-
 from scipy.stats import norm
 
 
@@ -262,4 +258,3 @@ class debiasedLasso:
 
         self.pvals = ps
         self.bhat = unbiased_lasso
-

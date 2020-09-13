@@ -217,9 +217,9 @@ class lassoproj:
 
 
         ## Find the desired lambda:
-        #     Use 10-fold cv to find the best lambda with the minimized error.
+        #     Use 5-fold cv to find the best lambda with the minimized error.
 
-        bestlambda=self.cv_bestlambda(lambdas,x,K=10,lambdatuningfactor=lambdatuningfactor)
+        bestlambda=self.cv_bestlambda(lambdas,x,K=5,lambdatuningfactor=lambdatuningfactor)
 
         Z = np.zeros(shape=(n, p))
 

@@ -2,12 +2,15 @@ import numpy as np
 import math
 from sklearn.linear_model import LassoCV,LassoLars,RidgeCV
 from statsmodels.api import OLS
+from multiprocessing import Pool
 import sys
 
 class multi_split:
-    def __init__(self, ci=False, ci_level=0.95, B=100, fraction=0.5, repeat_max=20, manual_lam=True,
+    def __init__(self, ci=False, ci_level=0.95,
                  aggr_ci=True, return_nonaggr=False,
-                 model_selector=LassoCV(cv=10, n_jobs=-1, fit_intercept=False, tol=0.001)):
+                 B=100, fraction=0.5, repeat_max=20,
+                 manual_lam=True,
+                 model_selector=LassoCV(n_jobs=-1, fit_intercept=False, tol=1e-07,cv=10)):
 
         '''
         An implementation of Multiple Splitting methods https://doi.org/10.1198/jasa.2009.tm08647
@@ -44,17 +47,18 @@ class multi_split:
         self.repeat_max = repeat_max
         self.gamma = np.arange(start=math.ceil(0.05 * B) / B, stop=1 - 1 / B, step=1 / B, dtype=float)
 
+
     def singlesplit(self, X, y, nleft):
 
-        ######## One sample single split ########
-
+        ######## Split a sample into two subsamples ########
+        print(self.gamma)
         n, p = X.shape
         nright = n - nleft
 
         pvals_v = np.ones(p)
         lci_v = np.array([-np.Inf] * p)
         uci_v = np.array([np.Inf] * p)
-        coefs = np.empty(p)
+        coefs = np.zeros(p)
         ses_v = np.array([np.Inf] * p)
 
         tryagain = True
@@ -63,7 +67,8 @@ class multi_split:
         while tryagain:
 
             ######## Randomly split the sample #######
-            split = np.random.randint(low=1, high=n, size=nleft)  # without replacement
+            #split = np.random.choice(np.arange(n), nleft, replace=False)  # without replacement
+            split = np.array([38,13,45,15,42,23,6,24,34,19,29,20,48,35,32,46,5,3,25,10,27,22,33,9,1])
             xleft = X.copy()[split, :]
             yleft = y.copy()[split]
 
@@ -71,7 +76,6 @@ class multi_split:
             yright = y.copy()[~split]
 
             ######## Model selection on Sample I #######
-
             if self.manual_lam:
                 # calculate regularization path
                 eps = 0.001
@@ -79,11 +83,16 @@ class multi_split:
                 max_lambda = np.max(np.abs(np.sum(np.dot(xleft.T, yleft)))) / n
                 lambda_path = np.round(np.exp(np.linspace(math.log10(max_lambda), math.log10(max_lambda * eps), K)),
                                        decimals=100)
-                self.selector.set_params(alphas=lambda_path)
+                self.selector.set_params(alphas=lambda_path,normalize =True)
 
+            #print(lambda_path)
             self.selector.fit(X=xleft, y=yleft)
 
             sel_nonzero = (self.selector.coef_ != 0)  # location of selected variables
+
+            location = np.where(self.selector.coef_ != 0)
+            print(location)
+            print(self.selector.coef_)
 
             p_sel = sum(sel_nonzero)  # size of selected variables
 
@@ -164,12 +173,9 @@ class multi_split:
         ses = np.zeros((self.B, p))
         df_res = np.zeros(self.B)
 
-        h = Pool(2)
         for b in range(self.B):
-            pvals[b, :], s0[b], coefs[b, :], lci[b, :], uci[b, :], ses[b, :], df_res[b] = h.apply_async(
-                self.singlesplit, args=(X, y, nleft)).get()
-        h.close()
-        h.join()
+            pvals[b, :], s0[b], coefs[b, :], lci[b, :], uci[b, :], ses[b, :], df_res[b] = self.singlesplit(X, y, nleft)
+
 
         # for b in range(self.B):
         # pvals[b,:],coefs[b,:],lci[b,:],uci[b,:],ses[b,:],df_res[b]= self.singlesplit(X,y,nleft)
