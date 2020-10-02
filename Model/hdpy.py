@@ -131,7 +131,3 @@ def hd(method="multi-split", X=None, y=None, family="gaussian",
     print(np.where(pvalues<0.05))
     return pvalues 
 
-    # Set up the matplotlib figure
-    # SNPs on the chromosomes
-
-
