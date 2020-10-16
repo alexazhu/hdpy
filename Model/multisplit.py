@@ -10,8 +10,7 @@ class Multisplit:
     def __init__(self, ci=False, ci_level=0.95,
                  aggr_ci=False, return_nonaggr=False,
                  B=100, fraction=0.5, repeat_max=20,
-                 manual_lam=True,
-                 model_selector=LassoCV(n_jobs=-1, fit_intercept=False, tol=1e-07,cv=10)):
+                 ):
 
         '''
         An implementation of Multiple Splitting methods https://doi.org/10.1198/jasa.2009.tm08647
@@ -20,10 +19,7 @@ class Multisplit:
         :param ci: calculate c.i. simultaneously
         :param ci_level: confidence level
         :param B: Times of single split
-        :param fraction: the ratio of I1 to I2
         :param repeat_max: maximum repeat times
-        :param model_selector: model for selection on the first half
-        :param manul_lam: use manually calculated lambda sequences
         ==========================================================================================
         Attributes:
         p_nonaggr: Raw p-values that haven't been aggregated, shape of B*p
@@ -43,8 +39,6 @@ class Multisplit:
         self.aggr_ci = aggr_ci
         self.return_nonaggr = return_nonaggr
 
-        self.selector = model_selector
-        self.manual_lam = manual_lam
         self.repeat_max = repeat_max
         self.gamma = np.arange(start=math.ceil(0.05 * B) / B, stop=1 - 1 / B, step=1 / B, dtype=float)
 
@@ -155,7 +149,27 @@ class Multisplit:
 
             return pvals_v, p_sel, coefs, lci_v, uci_v, ses_v, df_res
 
-    def fit(self, X, y):
+    def fit(self, X, y，manual_lam=True,
+                 model_selector=LassoCV(n_jobs=-1, fit_intercept=False, tol=1e-07,cv=10)):
+        '''       
+        ==========================================================================================
+        :param fraction: the ratio of I1 to I2
+        :param repeat_max: maximum repeat times
+        :param model_selector: model for selection on the first half
+        :param manul_lam: use manually calculated lambda sequences
+        :param fraction: the ratio of I1 to I2
+       
+        ==========================================================================================
+        Attributes:
+        p_nonaggr: Raw p-values that haven't been aggregated, shape of B*p
+        pvals_corr: P-values aggregated controlling for family-wise error rate
+        lci: Lower bounds of the confidence intervals
+        uci: Upper bounds of the confidence intervals
+        gamma_min: Smallest value of the gamma sequence
+        ===========================================================================================
+        Author: Ziyan Zhu, Date: Oct 4th,2019
+        ==========================================================================================
+        '''
 
         n, p = X.shape
 
