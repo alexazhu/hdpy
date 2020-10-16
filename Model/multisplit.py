@@ -59,6 +59,7 @@ class Multisplit:
         uci_v = np.array([np.Inf] * p)
         coefs = np.zeros(p)
         ses_v = np.array([np.Inf] * p)
+        df_res = 0
 
         tryagain = True
         count = 0
@@ -72,6 +73,7 @@ class Multisplit:
 
             xright = X.copy()[~split, :]
             yright = y.copy()[~split]
+            
 
             ######## Model selection on Sample I #######
             if self.manual_lam:
@@ -109,7 +111,7 @@ class Multisplit:
             if p_sel > 0 and (p_sel + 1) < nright:
 
                 tryagain = False
-
+            
                 ######## Fitting Sample II with reduced features using OLS ########
 
                 lm = OLS(yright, xright[:, sel_nonzero]).fit(method="qr")
@@ -142,13 +144,16 @@ class Multisplit:
                 lci_v[sel_nonzero] = sel_ci[:, 0]
                 uci_v[sel_nonzero] = sel_ci[:, 1]
 
+        
+                
+
                 ######## End of C.I. ########
 
             if count > self.repeat_max:
                 print("Exceed max repeat times,sample splits resulted in too large models.")
                 sys.exit()
 
-        return pvals_v, p_sel, coefs, lci_v, uci_v, ses_v, df_res
+            return pvals_v, p_sel, coefs, lci_v, uci_v, ses_v, df_res
 
     def fit(self, X, y):
 

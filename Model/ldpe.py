@@ -355,7 +355,7 @@ class Lassoproj:
         pvals_corr = self.pval_adjust_WY(cov2, pvals)
 
         self.pvals_corr = pvals_corr
-        return pvals_corr
+        
    
 
 

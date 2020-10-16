@@ -121,13 +121,11 @@ def hd(method="multi-split", X=None, y=None, family="gaussian",
         pvalues = est.pvals_corr
 
     if method == "debiased-lasso" or method == "debiased":
-        print("No corrected p-values for debiasedLasso.")
         est = DebiasedLasso()
         est.fit(X,y)
         pvalues = est.pvals
-
     
     print("Getting corrected p-values")
     print(np.where(pvalues<0.05))
-    return pvalues 
+    return pvalues
 
