@@ -106,7 +106,7 @@ def hd(method="multi-split", X=None, y=None, family="gaussian",
 
     if method == "multi-split" or method == "multi":
         est = Multisplit(ci=ci, ci_level=ci_level, B=B, fraction=fraction, manual_lam=manual_lam, aggr_ci=aggr_ci,
-                          return_nonaggr=return_nonaggr, model_selector=model_selector, repeat_max=repeat_max)
+                          return_nonaggr=return_nonaggr, repeat_max=repeat_max)
         est.fit(X,y)
         pvalues = est.pvals_corr
         
