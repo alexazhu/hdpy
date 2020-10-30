@@ -1,5 +1,6 @@
 import numpy as np
 import math
+from scipy.linalg import toeplitz,inv
 
 class Simulator:
     def __init__(self, n, p, snr, type,seed):
@@ -28,7 +29,10 @@ class Simulator:
                 indice[j, j:] = temp[:-j].copy()
                 j = j + 1
             indice = copytri(indice)
-            return np.power(0.9,indice)
+            toeplitz = np.power(0.9,indice)
+
+            print(inv(toeplitz))
+            return toeplitz
 
         if self.type == 'Exp_decay':
             indice = np.zeros((self.p, self.p))
@@ -80,7 +84,7 @@ class Simulator:
         if not None:
             s0=round(self.n*0.1)
         np.random.seed(self.seed)
-        active_index = np.random.randint(low=1, high=self.p, size=s0, dtype='l')
+        active_index = np.random.randint(low=0, high=self.p, size=s0, dtype='l')
         betas = np.zeros(self.p)
         if random_coef:
             betas[active_index] = np.random.randint(low=unif_lw, high=unif_up, size=s0, dtype='l')

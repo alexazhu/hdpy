@@ -126,6 +126,6 @@ def hd(method="multi-split", X=None, y=None, family="gaussian",
         pvalues = est.pvals
     
     print("Getting corrected p-values")
-    print(np.argwhere(pvalues<0.05)+1)
+    print(np.argwhere(pvalues<0.05))
     return pvalues
 
